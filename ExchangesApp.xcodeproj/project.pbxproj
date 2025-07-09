@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E826D9372E1CC8220063AB38 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E826D9362E1CC8220063AB38 /* SnapKit */; };
+		E826D9A42E1E39180063AB38 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = E826D9A32E1E39180063AB38 /* Then */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		367508D92E1B6A9E004A775E /* ExchangesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExchangesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -14,7 +19,7 @@
 		367508EE2E1B6A9E004A775E /* Exceptions for "ExchangesApp" folder in "ExchangesApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Application/Info.plist,
 			);
 			target = 367508D82E1B6A9E004A775E /* ExchangesApp */;
 		};
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E826D9372E1CC8220063AB38 /* SnapKit in Frameworks */,
+				E826D9A42E1E39180063AB38 /* Then in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = ExchangesApp;
 			packageProductDependencies = (
+				E826D9362E1CC8220063AB38 /* SnapKit */,
+				E826D9A32E1E39180063AB38 /* Then */,
 			);
 			productName = ExchangesApp;
 			productReference = 367508D92E1B6A9E004A775E /* ExchangesApp.app */;
@@ -107,6 +116,10 @@
 			);
 			mainGroup = 367508D02E1B6A9E004A775E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E826D9352E1CC8220063AB38 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				E826D9A22E1E39180063AB38 /* XCRemoteSwiftPackageReference "Then" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 367508DA2E1B6A9E004A775E /* Products */;
 			projectDirPath = "";
@@ -147,7 +160,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LW9AR5U74A;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ExchangesApp/Info.plist;
+				INFOPLIST_FILE = ExchangesApp/Application/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -174,7 +187,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LW9AR5U74A;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ExchangesApp/Info.plist;
+				INFOPLIST_FILE = ExchangesApp/Application/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -335,6 +348,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E826D9352E1CC8220063AB38 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		E826D9A22E1E39180063AB38 /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E826D9362E1CC8220063AB38 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E826D9352E1CC8220063AB38 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		E826D9A32E1E39180063AB38 /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E826D9A22E1E39180063AB38 /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 367508D12E1B6A9E004A775E /* Project object */;
 }
