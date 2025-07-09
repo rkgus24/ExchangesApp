@@ -19,6 +19,14 @@ final class ExchangeRateViewController: UIViewController {
         return table
     }()
 
+    private let noResultLabel = UILabel().then {
+        $0.text = "검색 결과 없음"
+        $0.textAlignment = .center
+        $0.textColor = .gray
+        $0.font = .systemFont(ofSize: 16, weight: .regular)
+        $0.isHidden = true
+    }
+
     private let viewModel = ExchangeRateViewModel()
 
     override func viewDidLoad() {
@@ -34,10 +42,10 @@ final class ExchangeRateViewController: UIViewController {
 
         view.addSubview(searchBar)
         view.addSubview(tableView)
+        view.addSubview(noResultLabel)
 
         searchBar.delegate = self
-        searchBar.placeholder = "통화 코드 또는 국가명 검색"
-
+        searchBar.placeholder = "통화 검색"
         searchBar.backgroundImage = UIImage()
 
         searchBar.snp.makeConstraints { make in
@@ -50,13 +58,21 @@ final class ExchangeRateViewController: UIViewController {
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide) // 좌우 하단
         }
 
+        noResultLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview().offset(16)
+            make.trailing.lessThanOrEqualToSuperview().offset(-16)
+        }
+
         tableView.dataSource = self // 데이터 소스
     }
 
     private func bindViewModel() {
         // 데이터 업데이트 했을 때 테이블뷰 갱신
         viewModel.onUpdate = { [weak self] in
-            self?.tableView.reloadData()
+            guard let self = self else { return }
+            self.tableView.reloadData()
+            self.noResultLabel.isHidden = !self.viewModel.filteredItems.isEmpty
         }
 
         // 에러 발생 알림
@@ -69,19 +85,15 @@ final class ExchangeRateViewController: UIViewController {
 }
 
 extension ExchangeRateViewController: UITableViewDataSource {
-    // 행 개수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.filteredItems.count
     }
-
-    // 행에 표시할 셀
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeRateCell.identifier, for: indexPath) as? ExchangeRateCell else {
             return UITableViewCell()
         }
-
         let model = viewModel.filteredItems[indexPath.row]
-        cell.configure(with: model) // 셀에 데이터 전달 UI 업뎃
+        cell.configure(with: model)
         return cell
     }
 }
