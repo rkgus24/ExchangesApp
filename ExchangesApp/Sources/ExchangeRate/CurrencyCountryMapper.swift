@@ -25,7 +25,7 @@ final class CurrencyCountryMapper {
         guard let url = Bundle.main.url(forResource: "currencies", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let result = try? JSONDecoder().decode([String: String].self, from: data) else {
-            print("❌ currencies.json 불러오기 실패")
+            print("currencies.json 불러오기 실패")
             return
         }
         mapping = result
