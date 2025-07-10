@@ -7,27 +7,36 @@
 
 import UIKit
 import SnapKit
+import Then
+import RxSwift
+import RxCocoa
 
 final class ExchangeRateViewController: UIViewController {
-    private let titleLabel = UILabel()
-    private let searchBar = UISearchBar() // 검색
+    private let titleLabel = UILabel().then {
+        $0.text = "환율 정보"
+        $0.font = .systemFont(ofSize: 36, weight: .bold)
+        $0.textAlignment = .left
+    }
+    private let searchBar = UISearchBar().then { // 검색
+        $0.placeholder = "통화 검색"
+        $0.backgroundImage = UIImage()
+    }
 
-    private let tableView: UITableView = {
-        let table = UITableView()
-        table.rowHeight = 60
-        table.register(ExchangeRateCell.self, forCellReuseIdentifier: ExchangeRateCell.identifier) // 셀 등록
-        return table
-    }()
+    private let tableView = UITableView().then {
+        $0.rowHeight = 60
+        $0.register(ExchangeRateCell.self, forCellReuseIdentifier: ExchangeRateCell.identifier) // 셀 등록
+    }
 
     private let noResultLabel = UILabel().then {
         $0.text = "검색 결과 없음"
         $0.textAlignment = .center
         $0.textColor = .gray
-        $0.font = .systemFont(ofSize: 16, weight: .regular)
+        $0.font = .systemFont(ofSize: 16)
         $0.isHidden = true
     }
 
     private let viewModel = ExchangeRateViewModel()
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,45 +48,26 @@ final class ExchangeRateViewController: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = .white
-        // title = "환율 정보"
+        [titleLabel, searchBar, tableView, noResultLabel].forEach { view.addSubview($0) }
 
-        view.addSubview(titleLabel)
-        view.addSubview(searchBar)
-        view.addSubview(tableView)
-        view.addSubview(noResultLabel)
-
-        titleLabel.text = "환율 정보"
-        titleLabel.font = UIFont.systemFont(ofSize: 36, weight: .bold)
-        titleLabel.textAlignment = .left
-
-        searchBar.delegate = self
-        searchBar.placeholder = "통화 검색"
-        searchBar.backgroundImage = UIImage()
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-        }
-
-        searchBar.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8) // 상단
-            make.leading.trailing.equalToSuperview() // 좌우 끝
-        }
-
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom) // 검색바 아래에
-            make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide) // 좌우 하단
-        }
-
-        noResultLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.leading.greaterThanOrEqualToSuperview().offset(16)
-            make.trailing.lessThanOrEqualToSuperview().offset(-16)
-        }
-
-        tableView.dataSource = self // 데이터 소스
+        tableView.backgroundView = noResultLabel
+        tableView.dataSource = self
         tableView.delegate = self
+
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            $0.leading.equalToSuperview().offset(16)
+        }
+
+        searchBar.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(8) // 상단
+            $0.leading.trailing.equalToSuperview() // 좌우 끝
+        }
+
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom) // 검색바 아래에
+            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide) // 좌우 하단
+        }
     }
 
     private func bindViewModel() {
@@ -94,6 +84,16 @@ final class ExchangeRateViewController: UIViewController {
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             self?.present(alert, animated: true)
         }
+    }
+
+    private func bindSearchBar() {
+        searchBar.rx.text.orEmpty
+            .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] query in
+                self?.viewModel.search(query: query)
+            })
+            .disposed(by: disposeBag)
     }
 }
 
@@ -122,13 +122,6 @@ extension ExchangeRateViewController: UITableViewDelegate {
         )
         navigationController?.pushViewController(calculatorVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-}
-
-extension ExchangeRateViewController: UISearchBarDelegate {
-    // 검색어 변경 했을 때 뷰모델에 필터링
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.search(query: searchText)
     }
 }
 

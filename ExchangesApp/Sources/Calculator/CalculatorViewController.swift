@@ -22,7 +22,7 @@ final class CalculatorViewController: UIViewController {
 
     private let titleLabel = UILabel()
 
-    // 생성자: 통화 정보 전달받음
+    // 생성자 : 통화 정보 전달받음
     init(currencyCode: String, countryName: String, rate: Double) {
         self.currencyCode = currencyCode
         self.countryName = countryName
@@ -37,7 +37,6 @@ final class CalculatorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        // title = "환율 계산기"
         setupUI()
     }
 
@@ -64,7 +63,7 @@ final class CalculatorViewController: UIViewController {
         amountTextField.borderStyle = .roundedRect
         amountTextField.keyboardType = .decimalPad
         amountTextField.textAlignment = .center
-        amountTextField.placeholder = "금액을 입력하세요"
+        amountTextField.placeholder = "달러(USD)를 입력하세요"
 
         // 버튼 세팅
         convertButton.backgroundColor = .systemBlue
@@ -80,59 +79,67 @@ final class CalculatorViewController: UIViewController {
         resultLabel.numberOfLines = 0
         resultLabel.text = "계산 결과가 여기에 표시됩니다"
 
-        // View에 추가
-        view.addSubview(titleLabel)
-        view.addSubview(labelStack)
-        view.addSubview(amountTextField)
-        view.addSubview(convertButton)
-        view.addSubview(resultLabel)
+        [titleLabel, labelStack, amountTextField, convertButton, resultLabel].forEach {
+            view .addSubview($0)
+        }
 
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
-            make.leading.trailing.equalToSuperview().inset(24)
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(24)
         }
 
         // AutoLayout
-        labelStack.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.centerX.equalToSuperview()
+        labelStack.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(16)
+            $0.centerX.equalToSuperview()
         }
 
-        amountTextField.snp.makeConstraints { make in
-            make.top.equalTo(labelStack.snp.bottom).offset(32)
-            make.leading.trailing.equalToSuperview().inset(24)
-            make.height.equalTo(44)
+        amountTextField.snp.makeConstraints {
+            $0.top.equalTo(labelStack.snp.bottom).offset(32)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.height.equalTo(44)
         }
 
-        convertButton.snp.makeConstraints { make in
-            make.top.equalTo(amountTextField.snp.bottom).offset(24)
-            make.leading.trailing.equalToSuperview().inset(24)
-            make.height.equalTo(44)
+        convertButton.snp.makeConstraints {
+            $0.top.equalTo(amountTextField.snp.bottom).offset(24)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.height.equalTo(44)
         }
 
-        resultLabel.snp.makeConstraints { make in
-            make.top.equalTo(convertButton.snp.bottom).offset(32)
-            make.leading.trailing.equalToSuperview().inset(24)
+        resultLabel.snp.makeConstraints {
+            $0.top.equalTo(convertButton.snp.bottom).offset(32)
+            $0.leading.trailing.equalToSuperview().inset(24)
         }
     }
 
     @objc private func convertTapped() {
-        guard let text = amountTextField.text, let amount = Double(text) else {
-            resultLabel.text = "금액을 입력해주세요"
+        guard let text = amountTextField.text, !text.trimmingCharacters(in: .whitespaces).isEmpty else {
+            showAlert(message: "금액을 입력해주세요")
+            return
+        }
+
+        guard let amount = Double(text) else {
+            showAlert(message: "올바른 숫자를 입력해주세요")
             return
         }
 
         let converted = amount * rate
-
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
 
-        if let formatted = formatter.string(from: NSNumber(value: converted)) {
-            resultLabel.text = "환산 금액 : \(formatted) \(currencyCode)"
+        if  let formattedAmount = formatter.string(from: NSNumber(value: amount)),
+            let formattedConverted = formatter.string(from: NSNumber(value: converted)) {
+            resultLabel.text = "$\(formattedAmount) → \(formattedConverted) \(currencyCode)"
         } else {
             resultLabel.text = "계산 실패"
         }
+    }
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert,animated: true)
     }
 }
 
