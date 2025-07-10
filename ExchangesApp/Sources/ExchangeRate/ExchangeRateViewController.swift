@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 final class ExchangeRateViewController: UIViewController {
-
+    private let titleLabel = UILabel()
     private let searchBar = UISearchBar() // 검색
 
     private let tableView: UITableView = {
@@ -38,18 +38,29 @@ final class ExchangeRateViewController: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = .white
-        title = "환율 정보"
+        // title = "환율 정보"
 
+        view.addSubview(titleLabel)
         view.addSubview(searchBar)
         view.addSubview(tableView)
         view.addSubview(noResultLabel)
+
+        titleLabel.text = "환율 정보"
+        titleLabel.font = UIFont.systemFont(ofSize: 36, weight: .bold)
+        titleLabel.textAlignment = .left
 
         searchBar.delegate = self
         searchBar.placeholder = "통화 검색"
         searchBar.backgroundImage = UIImage()
 
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+        }
+
         searchBar.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top) // 상단
+            make.top.equalTo(titleLabel.snp.bottom).offset(8) // 상단
             make.leading.trailing.equalToSuperview() // 좌우 끝
         }
 
@@ -65,6 +76,7 @@ final class ExchangeRateViewController: UIViewController {
         }
 
         tableView.dataSource = self // 데이터 소스
+        tableView.delegate = self
     }
 
     private func bindViewModel() {
@@ -95,6 +107,20 @@ extension ExchangeRateViewController: UITableViewDataSource {
         let model = viewModel.filteredItems[indexPath.row]
         cell.configure(with: model)
         return cell
+    }
+}
+
+extension ExchangeRateViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // print("셀 선택 : \(indexPath.row)")
+        let selected = viewModel.filteredItems[indexPath.row]
+        let calculatorVC = CalculatorViewController(
+            currencyCode: selected.currencyCode,
+            countryName: selected.countryName,
+            rate: selected.rate
+        )
+        navigationController?.pushViewController(calculatorVC, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
