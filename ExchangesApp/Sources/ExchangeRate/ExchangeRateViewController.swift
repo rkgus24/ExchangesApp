@@ -31,6 +31,7 @@ final class ExchangeRateViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.title = "환율 정보"
         setupUI() // UI 초기 설정
         bindViewModel() // 뷰 모델이랑 바인딩
         viewModel.fetchRates() // 환율 데이터 요청
