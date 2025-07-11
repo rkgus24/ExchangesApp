@@ -12,6 +12,14 @@ import RxSwift
 import RxCocoa
 
 final class ExchangeRateViewController: UIViewController {
+    private let viewModel = ExchangeRateViewModel()
+    private let disposeBag = DisposeBag()
+
+    private let tableView = UITableView().then {
+        $0.rowHeight = 60
+        $0.register(ExchangeRateCell.self, forCellReuseIdentifier: ExchangeRateCell.identifier) // 셀 등록
+    }
+
     private let titleLabel = UILabel().then {
         $0.text = "환율 정보"
         $0.font = .systemFont(ofSize: 36, weight: .bold)
@@ -22,11 +30,6 @@ final class ExchangeRateViewController: UIViewController {
         $0.backgroundImage = UIImage()
     }
 
-    private let tableView = UITableView().then {
-        $0.rowHeight = 60
-        $0.register(ExchangeRateCell.self, forCellReuseIdentifier: ExchangeRateCell.identifier) // 셀 등록
-    }
-
     private let noResultLabel = UILabel().then {
         $0.text = "검색 결과 없음"
         $0.textAlignment = .center
@@ -35,15 +38,13 @@ final class ExchangeRateViewController: UIViewController {
         $0.isHidden = true
     }
 
-    private let viewModel = ExchangeRateViewModel()
-    private let disposeBag = DisposeBag()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "환율 정보"
         setupUI() // UI 초기 설정
         bindViewModel() // 뷰 모델이랑 바인딩
         viewModel.fetchRates() // 환율 데이터 요청
+        bindSearchBar()
     }
 
     private func setupUI() {
@@ -107,6 +108,10 @@ extension ExchangeRateViewController: UITableViewDataSource {
         }
         let model = viewModel.filteredItems[indexPath.row]
         cell.configure(with: model)
+
+        cell.onFavoriteToggle = { [weak self] in
+            self?.viewModel.toggleFavorite(for: indexPath.row)
+        }
         return cell
     }
 }
