@@ -36,14 +36,22 @@ final class CalculatorViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupUI()
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 
     private func setupUI() {
         titleLabel.text = "환율 계산기"
         titleLabel.font = UIFont.systemFont(ofSize: 36, weight: .bold)
         titleLabel.textAlignment = .left
+        titleLabel.textColor = .label
 
         // 상단 통화/국가 레이블 스택
         let labelStack = UIStackView(arrangedSubviews: [currencyLabel, countryLabel])
@@ -54,9 +62,10 @@ final class CalculatorViewController: UIViewController {
         // 레이블 세팅
         currencyLabel.font = .systemFont(ofSize: 24, weight: .bold)
         currencyLabel.text = currencyCode
+        currencyLabel.textColor = .label
 
         countryLabel.font = .systemFont(ofSize: 16)
-        countryLabel.textColor = .gray
+        countryLabel.textColor = .secondaryLabel
         countryLabel.text = countryName
 
         // 입력창 세팅
@@ -64,6 +73,8 @@ final class CalculatorViewController: UIViewController {
         amountTextField.keyboardType = .decimalPad
         amountTextField.textAlignment = .center
         amountTextField.placeholder = "달러(USD)를 입력하세요"
+        amountTextField.backgroundColor = .secondarySystemBackground
+        amountTextField.textColor = .label
 
         // 버튼 세팅
         convertButton.backgroundColor = .systemBlue
@@ -78,6 +89,7 @@ final class CalculatorViewController: UIViewController {
         resultLabel.textAlignment = .center
         resultLabel.numberOfLines = 0
         resultLabel.text = "계산 결과가 여기에 표시됩니다"
+        resultLabel.textColor = .label
 
         [titleLabel, labelStack, amountTextField, convertButton, resultLabel].forEach {
             view .addSubview($0)

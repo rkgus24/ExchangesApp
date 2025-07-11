@@ -18,29 +18,36 @@ final class ExchangeRateViewController: UIViewController {
     private let tableView = UITableView().then {
         $0.rowHeight = 60
         $0.register(ExchangeRateCell.self, forCellReuseIdentifier: ExchangeRateCell.identifier) // 셀 등록
+        $0.backgroundColor = .systemBackground
     }
 
     private let titleLabel = UILabel().then {
         $0.text = "환율 정보"
         $0.font = .systemFont(ofSize: 36, weight: .bold)
         $0.textAlignment = .left
+        $0.textColor = .label
     }
     private let searchBar = UISearchBar().then { // 검색
         $0.placeholder = "통화 검색"
         $0.backgroundImage = UIImage()
+        $0.barTintColor = .systemBackground
+        $0.searchTextField.backgroundColor = .secondarySystemBackground
+        $0.searchTextField.textColor = .label
     }
 
     private let noResultLabel = UILabel().then {
         $0.text = "검색 결과 없음"
         $0.textAlignment = .center
-        $0.textColor = .gray
+        $0.textColor = .secondaryLabel
         $0.font = .systemFont(ofSize: 16)
         $0.isHidden = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         self.navigationItem.title = "환율 정보"
+
         setupUI() // UI 초기 설정
         bindViewModel() // 뷰 모델이랑 바인딩
         viewModel.fetchRates() // 환율 데이터 요청
@@ -48,7 +55,6 @@ final class ExchangeRateViewController: UIViewController {
     }
 
     private func setupUI() {
-        view.backgroundColor = .white
         [titleLabel, searchBar, tableView, noResultLabel].forEach { view.addSubview($0) }
 
         tableView.backgroundView = noResultLabel

@@ -19,7 +19,7 @@ final class ExchangeRateCell: UITableViewCell {
 
     private let countryLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 14)
-        $0.textColor = .gray
+        $0.textColor = .secondaryLabel
         $0.lineBreakMode = .byTruncatingTail
     }
 
@@ -49,6 +49,8 @@ final class ExchangeRateCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
         favoriteButton.addTarget(self, action: #selector(favoriteTapped), for: .touchUpInside)
+        backgroundColor = .systemBackground
+        contentView.backgroundColor = .systemBackground
     }
 
     required init?(coder: NSCoder) {
