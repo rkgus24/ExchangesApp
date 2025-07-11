@@ -32,6 +32,14 @@ final class ExchangeRateCell: UITableViewCell {
         $0.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
+    private let favoriteButton = UIButton().then {
+        $0.tintColor = .systemYellow
+        $0.setContentHuggingPriority(.required, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+
+    var onFavoriteToggle: (() -> Void)?
+
     private let labelStackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 4
@@ -40,6 +48,7 @@ final class ExchangeRateCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
+        favoriteButton.addTarget(self, action: #selector(favoriteTapped), for: .touchUpInside)
     }
 
     required init?(coder: NSCoder) {
@@ -56,11 +65,15 @@ final class ExchangeRateCell: UITableViewCell {
         formatter.maximumFractionDigits = 4
         formatter.groupingSeparator = ""
 
-        if let formatted = formatter.string(from: NSNumber(value: model.rate)) {
-            rateLabel.text = formatted
-        } else {
-            rateLabel.text = String(format: "%.4f", model.rate)
-        }
+        rateLabel.text = formatter.string(from: NSNumber(value: model.rate)) ?? String(format: "%.4f", model.rate)
+
+        let starImage = model.isFavorite ? "star.fill" : "star"
+        favoriteButton.setImage(UIImage(systemName: starImage), for: .normal)
+
+    }
+
+    @objc private func favoriteTapped() {
+        onFavoriteToggle?()
     }
 
     private func setupLayout() {
@@ -69,6 +82,7 @@ final class ExchangeRateCell: UITableViewCell {
 
         contentView.addSubview(labelStackView)
         contentView.addSubview(rateLabel)
+        contentView.addSubview(favoriteButton)
 
         // contentView 높이 제약 조건
         contentView.snp.makeConstraints {
@@ -80,14 +94,20 @@ final class ExchangeRateCell: UITableViewCell {
         labelStackView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalToSuperview()
+            $0.trailing.lessThanOrEqualTo(rateLabel.snp.leading).offset(-8)
+        }
+
+        favoriteButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-16)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
         }
 
         // rateLabel 제약 조건
         rateLabel.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-16)
+            $0.trailing.equalTo(favoriteButton.snp.leading).offset(-8)
             $0.centerY.equalToSuperview()
-            $0.leading.greaterThanOrEqualTo(labelStackView.snp.trailing).offset(16)
-            $0.width.equalTo(120)
+            $0.width.lessThanOrEqualTo(100)
         }
     }
 }

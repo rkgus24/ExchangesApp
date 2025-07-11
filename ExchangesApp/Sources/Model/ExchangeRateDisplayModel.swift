@@ -11,4 +11,5 @@ struct ExchangeRateDisplayModel {
     let currencyCode: String // 통화 코드
     let countryName: String // 통화의 국가 이름
     let rate: Double // 환율 값
+    var isFavorite: Bool
 }
