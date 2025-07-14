@@ -30,7 +30,7 @@
 
 ---
 
-## 🧩 주요 화면 소개
+## 주요 화면 소개
 
 ### ExchangeRateViewController.swift
 
